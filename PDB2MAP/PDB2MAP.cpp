@@ -324,7 +324,7 @@ int _tmain ( int argc , TCHAR * argv[] )
                              cRS.LoadString ( IDS_HEADERINFO )       ,
                              szBaseName                              ,
                              cIM.TimeDateStamp                       ,
-                             _tctime ( (time_t*)&cIM.TimeDateStamp ) ,
+                             _tctime32 ( (__time32_t*)&cIM.TimeDateStamp ) ,
                              dwBase                                   ))
         {
             WarningOut ( cRS.LoadString ( IDS_WRITEFAILED ) ,
@@ -337,7 +337,7 @@ int _tmain ( int argc , TCHAR * argv[] )
         VerboseOut ( cRS.LoadString ( IDS_VB_STARTENUM ) ) ;
         BOOL bEnumRet =
             g_cSym.SymEnumerateSymbols ( dwBase              ,
-                                         FunctionEnumeration ,
+                                         (PSYM_ENUMSYMBOLS_CALLBACK64)FunctionEnumeration ,
                                          NULL                 ) ;
         if ( FALSE == bEnumRet )
         {
@@ -598,7 +598,7 @@ int _tmain ( int argc , TCHAR * argv[] )
     if ( INVALID_HANDLE_VALUE != hFile )
     {
 #ifdef _DEBUG
-        BOOL bRet =
+        bRet =
 #endif
         CloseHandle ( hFile ) ;
 #ifdef _DEBUG
