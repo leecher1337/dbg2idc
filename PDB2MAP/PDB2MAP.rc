@@ -16,13 +16,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// Englisch (USA) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -97,7 +95,7 @@ END
 // String Table
 //
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_LOGO                "PDB2MAP Version %d.%02d - Copyright (c) 2000-2003 by John Robbins\n\n"
     IDS_USAGE1              "\nPDB2MAP generates readable MAP-type files (.P2M) for an application already\n"
@@ -107,24 +105,24 @@ BEGIN
     IDS_USAGE5              "Usage:  PDB2MAP [[/|-]?|u|v|nologo] <Module>\n\n"
     IDS_USAGE6              "Options:\n"
     IDS_USAGE7              "/?      - Display this help.\n"
-    IDS_USAGE8              "/u      - Undecorate symbol names Default is off.\n"
+    IDS_USAGE8              "/u      - Undecorate symbol names Default is off.\n/i      - Create IDA IDC script.\n"
     IDS_USAGE9              "/v      - Verbose output.\n"
     IDS_USAGE10             "/nologo - Do not show the logo.\n"
     IDS_USAGE11             "Module  - The binary file, compiled with symbols, to process.\n"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_USAGE12             "          <Module>.P2M is written to the current directory.\n"
     IDS_P2MEXT              ".P2M"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_GETSIZEFAILED       "Unable to find symbol size"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_INVALIDCMDLINE      "Invalid command line\n"
     IDS_FAILEDSYMINIT       "The symbol engine failed to initialize.\n"
@@ -139,7 +137,7 @@ BEGIN
     IDS_NOLINEINFO          "No line information found.\n"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_VB_INITSYMENG       "Initializing the symbol engine.\n"
     IDS_VB_OPENINGFILE      "Preparing to open the input file.\n"
@@ -151,12 +149,12 @@ BEGIN
     IDS_VBS_ADDINGLINE      "  Adding line: %5d\n"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_VBS_NEWRANGE        "  A new source range!\n"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_HEADERINFO64        "PDB2MAP Generated Map File\n\nImage: %s\n\nTimestamp is %X -> %s\nPreferred load address is %016I64X\n\n"
     IDS_FUNCTIONHEADER64    "Address             Size  Function\n"
@@ -164,13 +162,13 @@ BEGIN
     IDS_SPACERS64           "\n"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_SRCHEADER64         "\n\nLine numbers for %s\n"
     IDS_LINEFORMAT64        "%5d : 0x%016I64X  "
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_HEADERINFO32        "PDB2MAP Generated Map File\n\nImage: %s\n\nTimestamp is %X -> %s\nPreferred load address is %08X\n\n"
     IDS_FUNCTIONHEADER32    "Address      Size  Function\n"
@@ -180,7 +178,7 @@ BEGIN
     IDS_LINEFORMAT32        "%5d : 0x%08X  "
 END
 
-#endif    // English (U.S.) resources
+#endif    // Englisch (USA) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

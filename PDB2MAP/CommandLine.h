@@ -30,6 +30,8 @@ typedef struct tag_OPTIONS
     BOOL    bVerbose ;
     // Undecorate all symbol names.
     BOOL    bUndecorate ;
+    // Write IDC instead of MAP file.
+    BOOL    bWriteIDC ;
     // The file to process.
     TCHAR   szFile[ MAX_PATH ] ;
 } OPTIONS , * POPTIONS ;

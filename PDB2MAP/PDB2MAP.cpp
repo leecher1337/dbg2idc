@@ -34,6 +34,7 @@ const UINT k_MINORVERSION = 0 ;
 #define IDS_SRCHEADER      IDS_SRCHEADER64
 #define IDS_LINEFORMAT     IDS_LINEFORMAT64
 #define k_SRCLINESPERLINE  2
+#define MAKENAME_FMT       "MakeName(0x%016I64X,\"%s\");\n"
 #else
 #define IDS_HEADERINFO     IDS_HEADERINFO32
 #define IDS_FUNCTIONHEADER IDS_FUNCTIONHEADER32
@@ -42,6 +43,7 @@ const UINT k_MINORVERSION = 0 ;
 #define IDS_SRCHEADER      IDS_SRCHEADER32
 #define IDS_LINEFORMAT     IDS_LINEFORMAT32
 #define k_SRCLINESPERLINE  4
+#define MAKENAME_FMT       "MakeName(0x%08X,\"%s\");\n"
 #endif
 
 /*//////////////////////////////////////////////////////////////////////
@@ -173,7 +175,7 @@ int _tmain ( int argc , TCHAR * argv[] )
 
     // The return value.  Positive thinking says the return will be
     // good.
-    int iRetValue = 0 ;
+    int iRetValue = 0, iRetPrint ;
 
     // Get the command line options.
     BOOL bRet = ResolveCommandLine ( g_stOpts , argc , argv ) ;
@@ -304,7 +306,7 @@ int _tmain ( int argc , TCHAR * argv[] )
         TCHAR szBaseName [ MAX_PATH ] ;
         _tcscpy ( szBaseName , szOutputName ) ;
 
-        _tcscpy ( pMark , cRS.LoadString ( IDS_P2MEXT ) ) ;
+        _tcscpy ( pMark , g_stOpts.bWriteIDC?_T(".IDC"):cRS.LoadString ( IDS_P2MEXT ) ) ;
 
 
         // Open the text file for writing.
@@ -320,12 +322,14 @@ int _tmain ( int argc , TCHAR * argv[] )
         VerboseOut ( cRS.LoadString ( IDS_VB_WRITINGHEADER ) ) ;
 
         // Write out the header information.
-        if ( 0 > _ftprintf ( fileOutput                              ,
+        if (g_stOpts.bWriteIDC) iRetPrint = _ftprintf (fileOutput, _T("#include <idc.idc>\nstatic main() {\n"));
+        else iRetPrint = _ftprintf ( fileOutput                      ,
                              cRS.LoadString ( IDS_HEADERINFO )       ,
                              szBaseName                              ,
                              cIM.TimeDateStamp                       ,
                              _tctime32 ( (__time32_t*)&cIM.TimeDateStamp ) ,
-                             dwBase                                   ))
+                             dwBase                                   );
+        if ( 0 > iRetPrint)
         {
             WarningOut ( cRS.LoadString ( IDS_WRITEFAILED ) ,
                          szOutputName                        ) ;
@@ -362,14 +366,17 @@ int _tmain ( int argc , TCHAR * argv[] )
         SymSetOptions ( SYMOPT_LOAD_LINES ) ;
 
         // Write out the functions.
-        VerboseOut ( cRS.LoadString ( IDS_FUNCTIONHEADER ) ) ;
-        if ( 0 > _ftprintf ( fileOutput    ,
-                             (LPCTSTR)cRS  ) )
+        if (!g_stOpts.bWriteIDC)
         {
-            WarningOut ( cRS.LoadString ( IDS_WRITEFAILED ) ,
-                         szOutputName                        ) ;
-            iRetValue = 2 ;
-            throw 0 ;
+            VerboseOut ( cRS.LoadString ( IDS_FUNCTIONHEADER ) ) ;
+            if ( 0 > _ftprintf ( fileOutput    ,
+                                 (LPCTSTR)cRS  ) )
+           {
+               WarningOut ( cRS.LoadString ( IDS_WRITEFAILED ) ,
+                             szOutputName                        ) ;
+               iRetValue = 2 ;
+               throw 0 ;
+           }
         }
 
         CResString cFuncFMT ( GetModuleHandle ( NULL ) ) ;
@@ -417,11 +424,17 @@ int _tmain ( int argc , TCHAR * argv[] )
                              pFInfo->ulSymSize          ,
                              pSymName                    ) ;
             }
-            if ( 0 > _ftprintf ( fileOutput                 ,
+            if (g_stOpts.bWriteIDC) 
+            {
+                if (_tcsncmp(pSymName, _T("__imp_"), 6) && _tcsncmp(pSymName, _T("??"), 2))	/* Skip import and string names */
+                    iRetPrint = _ftprintf ( fileOutput, _T(MAKENAME_FMT), (ADDRCAST)pFInfo->ulAddr, pSymName);
+            }
+            else iRetPrint = _ftprintf ( fileOutput         ,
                                  (LPCTSTR)cFuncFMT          ,
                                  (ADDRCAST)pFInfo->ulAddr   ,
                                  pFInfo->ulSymSize          ,
-                                 pSymName                    ) )
+                                 pSymName                    );
+            if ( 0 > iRetPrint)
             {
                 WarningOut ( cRS.LoadString ( IDS_WRITEFAILED ) ,
                              szOutputName                        ) ;
@@ -515,7 +528,7 @@ int _tmain ( int argc , TCHAR * argv[] )
 
         // Loop through the source infos and write out the line
         // information.
-        if ( NULL != g_aSrcArray.pArray )
+        if ( NULL != g_aSrcArray.pArray && !g_stOpts.bWriteIDC )
         {
             for ( LPSRCINFO pSrcInfo = (LPSRCINFO)
                                 GetFirstArrayItem ( &g_aSrcArray ) ;
@@ -577,7 +590,8 @@ int _tmain ( int argc , TCHAR * argv[] )
         }
         else
         {
-            WarningOut ( cRS.LoadString ( IDS_NOLINEINFO ) ) ;
+            if (g_stOpts.bWriteIDC) _ftprintf ( fileOutput, _T("}\n") );
+            else WarningOut ( cRS.LoadString ( IDS_NOLINEINFO ) ) ;
         }
 
         // Get rid of the source file array.

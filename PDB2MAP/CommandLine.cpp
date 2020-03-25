@@ -71,6 +71,9 @@ BOOL ResolveCommandLine ( OPTIONS & stOpts , int argc , TCHAR * argv[] )
                         }
                     }
                     break ;
+                    case _T ( 'I' ) :
+                            stOpts.bWriteIDC = TRUE ;
+                    break ;
                     case _T ( '?' ) :
                         stOpts.bShowHelp = TRUE ;
                         return ( TRUE ) ;
