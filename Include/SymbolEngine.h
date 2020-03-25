@@ -99,12 +99,14 @@ typedef BOOL (CALLBACK *PENUM_LOCAL_VARS_CALLBACK)
                                       int      iIndentLevel  ,
                                       PVOID    pContext       ) ;
                                       
+#ifndef _IMAGEHLP_
 // The UNICODE wrapper on UnDecorateSymbolName.
 DWORD UnDecorateSymbolNameW ( PCWSTR DecoratedName       ,
                               PWSTR  UnDecoratedName     ,
                               DWORD  UndecoratedLength   ,
                               DWORD  Flags                ) ;
                                       
+#endif
 
 // The symbol engine class
 class CSymbolEngine
@@ -243,7 +245,23 @@ public      :
                               IN  PWSTR      ImageName   ,
                               IN  PWSTR      ModuleName  ,
                               IN  DWORD64    BaseOfDll   ,
-                              IN  DWORD      SizeOfDll    ) ;
+                              IN  DWORD      SizeOfDll    ) 
+	{
+		PSTR lpImageName = NULL, lpModuleName = NULL;
+		if (ImageName)
+		{
+			int cbImageName = wcslen(ImageName);
+			lpImageName = (PSTR)_malloca(cbImageName);
+			wcstombs(lpImageName, ImageName, cbImageName);
+		}
+		if (ModuleName)
+		{
+			int cbModuleName = wcslen(ModuleName);
+			lpModuleName = (PSTR)_malloca(cbModuleName);
+			wcstombs(lpModuleName, ModuleName, cbModuleName);
+		}
+		return SymLoadModule64 (hFile, lpImageName, lpModuleName, BaseOfDll, SizeOfDll);
+	}
 
 
     DWORD64 SymLoadModule ( IN  HANDLE     hFile       ,
